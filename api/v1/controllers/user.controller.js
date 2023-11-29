@@ -3,9 +3,9 @@ const User = require("../models/user.model");
 
 const ForgotPassword = require("../models/forgot-password.model");
 
-const generateHelper = require("../../v1/helpers/generate");
+const generateHelper = require("../../../helpers/generate");
 
-const sendMailHelper = require("../../v1/helpers/sendMail");
+const sendMailHelper = require("../../../helpers/sendMail");
 
 // [POST] /api/v1/users/register
 
@@ -85,6 +85,8 @@ module.exports.forgotPassword = async (req, res) => {
     const user = await User.findOne({
       email: email,
       deleted: false,
+      password: req.body.password,
+      token: generateHelper.generateRandomString(30)
     });
   
     if (!user) {
@@ -103,7 +105,7 @@ module.exports.forgotPassword = async (req, res) => {
     const objectForgotPassword = {
       email: email,
       otp: otp,
-      expireAt: Date.now() + timeExpire*60,
+      expireAt: Date.now() + timeExpire*60*1000,
     };
   
     const forgotPassword = new ForgotPassword(objectForgotPassword);
